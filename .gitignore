@@ -1,0 +1,17 @@
+data
+results
+*.pyc
+*.ipynb_checkpoints*
+*__pycache__*
+.*
+!/.gitignore
+*.local.ipynb
+\#*
+*.aux
+*.bbl
+*.blg
+*.log
+*.toc
+*.tex.backup
+*.png
+venv
