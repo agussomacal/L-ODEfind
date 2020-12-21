@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 from scipy.special import comb
 
-from src.lib.simulation_manager import Integrator, Oscilator, DifferentialModels
-from src.scripts.config import  data_path
+from src.lib.simulation_manager import Integrator, Oscilator, DifferentialModels, LorenzAttractor, RoselerAttractor
+from src.scripts.config import data_path
 
 
 def generate_data(data_experiment_name,
@@ -86,24 +86,34 @@ def poLabs(nVar: int, dMax: int, Xnote: (str, List) = "X") -> List[str]:
 
 
 if __name__ == '__main__':
-    folder_path = generate_data(
-        num_experiments_per_param=20,
-        num_time_steps=5000,
-        dt=0.01,
+    lorenz = {
+        'data_experiment_name': 'LorenzAttractor',
+        'model_class': LorenzAttractor,
+        'list_model_params': [{'sigma': 10, 'rho': 28, 'beta': 8.0 / 3}]
+    }
+    rossler = {
+        'data_experiment_name': 'rosseler',
+        'model_class': RoselerAttractor,
+        'list_model_params': [{'a': 0.52, 'b': 2, 'c': 4}]
+    }
 
-        # data_experiment_name='LorenzAttractor',
-        # model_class=LorenzAttractor,
-        # list_model_params=[{'sigma': 10, 'rho': 28, 'beta': 8.0 / 3}]
+    oscilator = {
+        'data_experiment_name': 'oscilator',
+        'model_class': Oscilator,
+        'list_model_params': [{'a': 0.1, 'b': -1, 'c': 1, 'd': 0}]
+    }
 
-        # data_experiment_name='rosseler',
-        # model_class=RoselerAttractor,
-        # list_model_params=[{'a': 0.52, 'b': 2, 'c': 4}]
+    for d in [lorenz, rossler, oscilator]:
+        folder_path = generate_data(
+            num_experiments_per_param=20,
+            num_time_steps=5000,
+            dt=0.01,
 
-        data_experiment_name='oscilator',
-        model_class=Oscilator,
-        list_model_params=[{'a': 0.1, 'b': -1, 'c': 1, 'd': 0}]
+            data_experiment_name=d['data_experiment_name'],
+            model_class=d['model_class'],
+            list_model_params=d['list_model_params']
 
-    )
+        )
 
     # TODO: decide to include or not the data plots
     # solution = pd.read_csv('{}/solution_params_{}_init_cond_{}.csv'.format(folder_path, 0, 0), index_col=0)

@@ -51,14 +51,14 @@ def fit_and_save_coeffs(model: str, out: str, targets: List[int], maxpolys: List
 
 if __name__ == '__main__':
     # obs_vars = ['x', 'y', 'z']
-    # model = 'LorenzAttractor5001'
-    # out = 'LorenzAttractor5001'
+    # model = 'LorenzAttractor'
+    # out = 'LorenzAttractor'
     # targets = [1]
     # maxpolys = [2]
 
     # obs_vars = ['x']
-    # model = 'LorenzAttractor5001'
-    # out = 'LorenzAttractor5001'
+    # model = 'LorenzAttractor'
+    # out = 'LorenzAttractor'
     # targets = [2, 3]
     # maxpolys = [3]
 

@@ -95,11 +95,11 @@ def translate_odefind_coeff(original_data: str, df: pd.DataFrame, var_name='X'):
 def add_times(df: pd.DataFrame, path_results):
     times = pd.read_csv(Path.joinpath(path_results, 'times.csv'), index_col=0)
     if 'Odefind' not in str(path_results):
-        if 'rosseler' in str(path_results) or 'oscilator' in str(path_results):
-            times = times.transpose()
-            times.columns = ['time']
-            times['model'] = [t.replace('.', '-') for t in times.index]
-            times['model'] = [t.replace('-csv', '.csv') for t in times['model']]
+        # gpomo times are saved in a different way
+        times = times.transpose()
+        times.columns = ['time']
+        times['model'] = [t.replace('.', '-') for t in times.index]
+        times['model'] = [t.replace('-csv', '.csv') for t in times['model']]
     df_times = df.join(times.set_index('model'), on='model')
     return df_times
 
@@ -130,12 +130,12 @@ def rosseler_true_coeffs_y(a=0.52, b=2.0, c=4.0):
 def oscilator_true_coeffs(a, b, c, d):
     return {
         'ct': 0,
-        'X1': -a*d+b*c,
+        'X1': -a * d + b * c,
         'X2': a + d,
         'X3': 0,
         'X1^2': 0,
         'X1 X2': 0,
-        'X1 X3':0,
+        'X1 X3': 0,
         'X2^2': 0,
         'X2 X3': 0
     }
@@ -199,7 +199,7 @@ def compare_coeffs(original_data: str, results_folder: str, var_name: str, d: in
             mses.append([model_name, f, mse])
     df = pd.DataFrame(mses, columns=['method', 'model', 'mse'])
 
-    if 'rosseler' in original_data or  'oscilator' in original_data:
+    if 'rosseler' in original_data or 'oscilator' in original_data:
         all_coeffs = pd.concat(all_adj_coeffs, axis=1)
     else:
         all_coeffs = pd.DataFrame()
@@ -230,7 +230,7 @@ def plot_mse_time(df: pd.DataFrame, model_results: str):
         ax.set_xticks([1, 10, 30, 60, 360])
         ax.set_xticklabels(['1s', '10s', '30s', '1m', '3m'])
 
-    ax.legend(['L-ODEfind', 'GPoMo'])
+    ax.legend(['GPoMo', 'L-ODEfind' ])
     plt.xlabel('Time')
     plt.ylabel('MSE')
     plt.grid()
@@ -239,10 +239,10 @@ def plot_mse_time(df: pd.DataFrame, model_results: str):
     # plt.show()
 
 
-def plot_coeffs(coeffs: pd.DataFrame, model_results: str, var_name:str, d:int):
+def plot_coeffs(coeffs: pd.DataFrame, model_results: str, var_name: str, d: int):
     coeffs_gpomo = coeffs[[i for i in coeffs.columns if 'gpomo' in i]]
     coeffs_pdefind = coeffs[[i for i in coeffs.columns if 'pdefind' in i]]
-    true_coeffs = coeffs[[var_name+str(d)]]
+    true_coeffs = coeffs[[var_name + str(d)]]
     true_coeffs.columns = ['true']
 
     if 'rosseler' in model_results:
@@ -252,7 +252,7 @@ def plot_coeffs(coeffs: pd.DataFrame, model_results: str, var_name:str, d:int):
         coeffs_gpomo = coeffs_gpomo.loc[cuadratic_var]
 
     # change labels Y3 = Y'', Y2=Y', Y1 = Y
-    d_labels = {var_name+'3': var_name+'\'\'', var_name+'2': var_name+'\'', var_name+'1': var_name}
+    d_labels = {var_name + '3': var_name + '\'\'', var_name + '2': var_name + '\'', var_name + '1': var_name}
     for k, v in d_labels.items():
         true_coeffs.index = [a.replace(k, v) for a in true_coeffs.index]
         coeffs_gpomo.index = [a.replace(k, v) for a in coeffs_gpomo.index]
@@ -274,15 +274,15 @@ def plot_coeffs(coeffs: pd.DataFrame, model_results: str, var_name:str, d:int):
 
 
 if __name__ == '__main__':
-    # model_data = 'LorenzAttractor5001'
-    # model_results = 'LorenzAttractor5001'
-    # var_name = 'X'
-    # d = 1
-
-    model_data = 'oscilator'
-    model_results = 'oscilator'
+    model_data = 'LorenzAttractor'
+    model_results = 'LorenzAttractor' + '_x_y_z'
     var_name = 'X'
-    d = 2
+    d = 1
+
+    # model_data = 'oscilator'
+    # model_results = 'oscilator'
+    # var_name = 'X'
+    # d = 2
 
     # model_data = 'rosseler'
     # model_results = 'rosseler_y'
@@ -292,7 +292,7 @@ if __name__ == '__main__':
     df_mse_gpomo, coeffs_gpomo = compare_coeffs(original_data=model_data, results_folder=model_results,
                                                 var_name=var_name,
                                                 d=d)
-    df_mse_odefind, coeffs_odefind = compare_coeffs(original_data=model_data, results_folder=model_results + 'Odefind',
+    df_mse_odefind, coeffs_odefind = compare_coeffs(original_data=model_data, results_folder=model_results + '_Odefind',
                                                     var_name=var_name, d=d)
 
     plot_mse_time(pd.concat([df_mse_gpomo, df_mse_odefind]), model_results)

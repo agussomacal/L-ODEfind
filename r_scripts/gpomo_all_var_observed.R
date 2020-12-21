@@ -7,23 +7,23 @@ mse <- function(x, y){
     ynorm = scale(y, center = means, scale = sds)
     return(mean((xnorm-ynorm)^2))
 }
-    
-            
+
+
 fit_gpomo <- function(time, ladata, max_time_derivative, poly_degree, steps){
     # output: coefficients of best gpomo model as the minimum mse metric in train prediction series.
     n_vars = dim(ladata)[2]
-
-            out <- gPoMo(data =ladata,
-                         tin =time,
-                         dMax =poly_degree, 
-                         nS=rep(max_time_derivative, n_vars),
-                         show =0,
-                         IstepMin =10, 
-                         IstepMax =steps,
-                         nPmin=0, 
-                         nPmax=Inf,
-                         method ='rk4')
-
+    
+    out <- gPoMo(data =ladata,
+                 tin =time,
+                 dMax =poly_degree, 
+                 nS=rep(max_time_derivative, n_vars),
+                 show =0,
+                 IstepMin =10, 
+                 IstepMax =steps,
+                 nPmin=0, 
+                 nPmax=Inf,
+                 method ='rk4')
+    
     # calculate mse for all the tested models
     loss <- list()
     for(model_name in names(out$stockoutreg)){
@@ -45,14 +45,14 @@ fit_gpomo <- function(time, ladata, max_time_derivative, poly_degree, steps){
     colnames(coefs) <- rev(poLabs(nVar=max_time_derivative*n_vars, dMax = 1)[-1])
     rownames(coefs) <- poLabs(nVar=max_time_derivative*n_vars, dMax = poly_degree)
     return(coefs)
-        
+    
 }
 
 
 
 experiment <- function(read_data_folder, write_data_folder, steps_list, max_time_derivative, poly_degree){
     print(read_data_folder)
-    dir.create(file.path(write_data_folder), showWarnings = FALSE)
+    dir.create(file.path(write_data_folder), showWarnings = TRUE)
     
     # read data
     fit_time_list <- list()
@@ -78,10 +78,10 @@ experiment <- function(read_data_folder, write_data_folder, steps_list, max_time
                 
                 fit_time_list[[out_filename]] <-  difftime(Sys.time(), t0, units = "secs")
                 print(paste('Time:',fit_time_list[[out_filename]]))
-                write.csv(fit_time_list, paste(write_data_folder, 'times.csv', sep='/'))
-
+                write.csv(fit_time_list, paste0(write_data_folder, 'times.csv'))
+                
                 print('Saving coefs.')
-                write.csv(coefs, paste(write_data_folder, out_filename, sep='/'))
+                write.csv(coefs, paste0(write_data_folder, out_filename))
             }
         }
     }
@@ -90,14 +90,13 @@ experiment <- function(read_data_folder, write_data_folder, steps_list, max_time
 args <- commandArgs(trailingOnly = TRUE)
 
 print(args)
-path_data = '/home/yamila/projects/rte2020/ret-ode/data/'
-path_results =  '/home/yamila/projects/rte2020/ret-ode/results2/'
+#path_data = '/home/yamila/projects/rte2020/ret-ode/data/'
+#path_results =  '/home/yamila/projects/rte2020/ret-ode/results2/'
 experiment(
     #read_data_folder = paste0(path_data, "LorenzAttractor",args[1],"/"),
     #write_data_folder =paste0(path_results, "LorenzAttractor", args[1],"/"),
-    read_data_folder = paste0(path_data, "LorenzAttractor/"),
-    write_data_folder =paste0(path_results, "LorenzAttractor_x_y_z/"),
-    
+    read_data_folder = args[1],
+    write_data_folder =args[2],
     #steps_list=c(40,640,1280,5120,10240),
     steps_list = c(40),
     max_time_derivative=1, 
@@ -108,4 +107,3 @@ experiment(
 
 
 
-        
