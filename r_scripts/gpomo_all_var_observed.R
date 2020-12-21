@@ -90,15 +90,11 @@ experiment <- function(read_data_folder, write_data_folder, steps_list, max_time
 args <- commandArgs(trailingOnly = TRUE)
 
 print(args)
-#path_data = '/home/yamila/projects/rte2020/ret-ode/data/'
-#path_results =  '/home/yamila/projects/rte2020/ret-ode/results2/'
 experiment(
-    #read_data_folder = paste0(path_data, "LorenzAttractor",args[1],"/"),
-    #write_data_folder =paste0(path_results, "LorenzAttractor", args[1],"/"),
     read_data_folder = args[1],
     write_data_folder =args[2],
     #steps_list=c(40,640,1280,5120,10240),
-    steps_list = c(40),
+    steps_list = c(args[3]),
     max_time_derivative=1, 
     poly_degree=2
 )
