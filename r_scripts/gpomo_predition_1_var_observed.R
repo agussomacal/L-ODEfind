@@ -136,34 +136,18 @@ args <- commandArgs(trailingOnly = TRUE)
 read_data_folder = args[1]
 write_data_folder = args[2]
 observed_var= args[3]
+steps = args[4]
 print(read_data_folder)
 print(write_data_folder)
 print(observed_var)
-
-#read_data_folder = paste0(path_data, 'rosseler/')
-#observed_var = c('y')
-#write_data_folder = paste0(path_results,'rosseler_y/')
-
-#read_data_folder = paste0(path_data, 'rosseler/')
-#observed_var = c('x')
-#write_data_folder = paste0(path_results,'rosseler_x/')
-
-#read_data_folder = paste0(path_data, 'LorenzAttractor/')
-#observed_var = c('x')
-#write_data_folder = paste0(path_results, 'LorenzAttractor_x/')
-
-
-#read_data_folder = paste0(path_data, "rte-39/")
-#observed_var = c('x')
-#write_data_folder = paste0(path_results, "rte-39_x/")
-
+print(steps)
 
 experiment(
     read_data_folder = read_data_folder,
     write_data_folder = write_data_folder,
     observed_var = observed_var,
     keep2test = 200,
-    steps_list= c(40),
+    steps_list= steps,
     max_time_derivatives=c(2,3), 
     poly_degrees=c(3),
     verbose = TRUE

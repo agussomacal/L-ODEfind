@@ -141,7 +141,7 @@ def oscilator_true_coeffs(a, b, c, d):
     }
 
 
-def compare_coeffs(original_data: str, results_folder: str, var_name: str, d: int):
+def compare_coeffs(original_data: str, results_folder: str, var_name: str, d: int, fully_obs: bool = True):
     path_data = Path.joinpath(data_path, original_data)
     path_results = Path.joinpath(results_path, results_folder)
 
@@ -187,7 +187,7 @@ def compare_coeffs(original_data: str, results_folder: str, var_name: str, d: in
                                           columns=[adj_coeffs.columns[-1]])
                 adj_coeffs = adj_coeffs[[adj_coeffs.columns[-1]]]
 
-            if 'rosseler' in original_data or 'oscilator' in original_data:
+            if not fully_obs:
                 if ix_coeff:
                     all_adj_coeffs.append(true_coeff)
                     ix_coeff = False
@@ -199,7 +199,7 @@ def compare_coeffs(original_data: str, results_folder: str, var_name: str, d: in
             mses.append([model_name, f, mse])
     df = pd.DataFrame(mses, columns=['method', 'model', 'mse'])
 
-    if 'rosseler' in original_data or 'oscilator' in original_data:
+    if not fully_obs:
         all_coeffs = pd.concat(all_adj_coeffs, axis=1)
     else:
         all_coeffs = pd.DataFrame()
@@ -230,7 +230,7 @@ def plot_mse_time(df: pd.DataFrame, model_results: str):
         ax.set_xticks([1, 10, 30, 60, 360])
         ax.set_xticklabels(['1s', '10s', '30s', '1m', '3m'])
 
-    ax.legend(['GPoMo', 'L-ODEfind' ])
+    ax.legend(['GPoMo', 'L-ODEfind'])
     plt.xlabel('Time')
     plt.ylabel('MSE')
     plt.grid()
@@ -274,30 +274,33 @@ def plot_coeffs(coeffs: pd.DataFrame, model_results: str, var_name: str, d: int)
 
 
 if __name__ == '__main__':
-    model_data = 'LorenzAttractor'
-    model_results = 'LorenzAttractor' + '_x_y_z'
-    var_name = 'X'
-    d = 1
-
-    # model_data = 'oscilator'
-    # model_results = 'oscilator'
+    # model_data = 'LorenzAttractor'
+    # model_results = 'LorenzAttractor_x_y_z'
     # var_name = 'X'
-    # d = 2
+    # d = 1
+    # fully_obs = True
+
+    model_data = 'oscilator'
+    model_results = 'oscilator_x'
+    var_name = 'X'
+    d = 2
+    fully_obs = False
 
     # model_data = 'rosseler'
     # model_results = 'rosseler_y'
     # var_name = 'Y'
     # d = 3
+    # fully_obs = False
 
     df_mse_gpomo, coeffs_gpomo = compare_coeffs(original_data=model_data, results_folder=model_results,
                                                 var_name=var_name,
-                                                d=d)
+                                                d=d, fully_obs=fully_obs)
     df_mse_odefind, coeffs_odefind = compare_coeffs(original_data=model_data, results_folder=model_results + '_Odefind',
-                                                    var_name=var_name, d=d)
+                                                    var_name=var_name, d=d, fully_obs=fully_obs)
 
     plot_mse_time(pd.concat([df_mse_gpomo, df_mse_odefind]), model_results)
 
-    if 'rosseler' in model_data or 'oscilator' in model_data:
+    if not fully_obs:
         coeffs = pd.concat([coeffs_gpomo, coeffs_odefind], axis=1)
         coeffs = coeffs.loc[:, ~coeffs.columns.duplicated()]
         plot_coeffs(coeffs, model_results, var_name, d)

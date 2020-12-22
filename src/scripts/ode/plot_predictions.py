@@ -163,20 +163,10 @@ if __name__ == '__main__':
     targets = [1, 2]
     time_horizons = np.arange(5, 196, 5)
 
-    # path_pdefind = None
-    # path_gpomo = 'rte-39'
-    # ymax = None
-    # targets = [1, 2, 3]
-    # time_horizons = np.arange(1,16)
-
     plot_data = plot_predictions(path_gpomo, time_horizons, path_pdefind, ymax, targets_to_plot=targets)
 
     times_data = plot_times(path_gpomo, path_pdefind,
                             targets_to_plot= targets)
 
-    if 'rte' in path_gpomo:
-        path = '/home/yamila/projects/rte2020/rte-diff-equations/data/results/rte-39/'
-        with open(path + 'plot_data_gpomo.pickle', 'wb') as f:
-            pickle.dump(plot_data, f)
-        times_data.to_csv(path + 'time_data_gpomo.csv', index=False)
+
 
